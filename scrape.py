@@ -20,8 +20,8 @@ with open(dotenv_path, "w") as f:
 load_dotenv(dotenv_path)
 
 # Environment variables
-CRED_LIST_FILEPATH = os.environ.get("CRED_LIST_FILEPATH")
-GITHUB_API_TOKEN = os.environ.get("GITHUB_API_TOKEN")
+CLF = os.environ.get("CLF")
+GAT = os.environ.get("GAT")
 
 # Constants
 GRAPHQL_URL = "https://replit.com/graphql"
@@ -52,7 +52,7 @@ graphql_headers = {
 }
 
 # Headers for GitHub API requests
-github_headers = {'Authorization': f'token {GITHUB_API_TOKEN}'}
+github_headers = {'Authorization': f'token {GAT}'}
 
 # Function definitions
 async def get_keys_from_huggingface(session, char, i):
@@ -80,7 +80,7 @@ async def validate_key(session, key):
                 raise aiohttp.ClientResponseError
             valid_keys.add(key)
             print(f"Valid key: {key}")
-            async with aiofiles.open(CRED_LIST_FILEPATH, mode="a") as f:
+            async with aiofiles.open(CLF, mode="a") as f:
                 await f.write(f"{key}\n")
     except aiohttp.ClientResponseError:
         print(f"Invalid key: {key}")
